@@ -1,0 +1,8 @@
+# Ignore everything
+*
+# DO NOT ignore:
+!.gitignore
+!**.sv
+!**.xpr
+!**.wpc
+!**.lpr
