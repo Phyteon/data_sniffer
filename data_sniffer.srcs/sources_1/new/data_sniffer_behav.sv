@@ -96,7 +96,7 @@ module data_sniffer #(
             /* TODO: Check if implicit assign like that is acceptable */
             iban_as_num = 0;
             for (int segment=0; segment<POLISH_FORMAT_IBAN_LENGTH; ++segment) begin
-                iban_as_num += iban_num_type'(this.swiss_buffer[segment]) * ('d10 ** segment);
+                iban_as_num += iban_num_type'(this.polish_buffer[segment]) * ('d10 ** segment);
             end
         endfunction
 
