@@ -1,8 +1,10 @@
 # Ignore everything
-*
+*.cache
+*.hw
+*.sim
 # DO NOT ignore:
 !.gitignore
-!**.sv
-!**.xpr
-!**.wpc
-!**.lpr
+!**/*.sv
+!**/*.xpr
+!**/*.wpc
+!**/*.lpr
