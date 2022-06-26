@@ -6,7 +6,7 @@ module data_converter
             wire clk,
             wire nreset,
             wire [7:0] data_chunk,
-        output wire [7:0] data_processed
+        output reg [7:0] data_processed
     );
     /**
      * This module is responsible for converting one byte of data from data FIFO
@@ -23,7 +23,6 @@ module data_converter
     localparam byte unsigned ASCII_CODE_FOR_CAPITAL_LETTER_A = 'd65;
     localparam byte unsigned ASCII_CODE_FOR_CAPITAL_LETTER_Z = 'd90;
     /* Internal signals */
-    reg [7:0] data_processed_s;
     wire data_is_uppercase_letter;
     wire data_is_digit;
     
@@ -38,21 +37,20 @@ module data_converter
     
     always @(posedge clk or negedge nreset) begin
         if (1'b0 == nreset)
-            data_processed_s <= 8'b0;
+            data_processed <= 8'b0;
         else begin
             if (1'b1 == data_is_uppercase_letter)
-                data_processed_s <= iban_letter_lut[data_chunk - ASCII_CODE_FOR_CAPITAL_LETTER_A];
+                data_processed <= iban_letter_lut[data_chunk - ASCII_CODE_FOR_CAPITAL_LETTER_A];
             else if (1'b1 == data_is_digit)
-                data_processed_s <= data_chunk - ASCII_CODE_FOR_DIGIT_ZERO;
+                data_processed <= data_chunk - ASCII_CODE_FOR_DIGIT_ZERO;
             else
-                data_processed_s <= 8'hFF;
+                data_processed <= 8'hFF;
         end
     end
     
-    assign data_processed = data_processed_s;
     
     /* Properties and assertions */
-    
+    `ifdef SIMULATION_ENV
     property pr__data_converter__status_signals_never_enabled_simultaneously;
         @(posedge clk) disable iff (!nreset)
             (data_is_uppercase_letter || data_is_digit)
@@ -64,5 +62,6 @@ module data_converter
         assert property(pr__data_converter__status_signals_never_enabled_simultaneously)
             else
             $error("%t: ERROR: ASSERTION FAILURE: %m", $time);
+    `endif
     
 endmodule
