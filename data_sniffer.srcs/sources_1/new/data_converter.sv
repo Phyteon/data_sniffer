@@ -14,7 +14,7 @@ module data_converter
      * or digit, the output value is 8'hFF.
      */
     /* Local parameters */
-    localparam byte unsigned iban_letter_lut [0:24] = {'d10, 'd11, 'd12, 'd13, 'd14, 'd15, 'd16, 'd17,
+    localparam byte unsigned iban_letter_lut [0:25] = {'d10, 'd11, 'd12, 'd13, 'd14, 'd15, 'd16, 'd17,
                                                        'd18, 'd19, 'd20, 'd21, 'd22, 'd23, 'd24, 'd25,
                                                        'd26, 'd27, 'd28, 'd29, 'd30, 'd31, 'd32, 'd33,
                                                        'd34, 'd35};
@@ -50,5 +50,19 @@ module data_converter
     end
     
     assign data_processed = data_processed_s;
+    
+    /* Properties and assertions */
+    
+    property pr__data_converter__status_signals_never_enabled_simultaneously;
+        @(posedge clk) disable iff (!nreset)
+            (data_is_uppercase_letter || data_is_digit)
+                |->
+            (1'b0 == (data_is_uppercase_letter & data_is_digit));
+    endproperty
+    
+    as__data_converter__status_signals_never_enabled_simultaneously:
+        assert property(pr__data_converter__status_signals_never_enabled_simultaneously)
+            else
+            $error("%t: ERROR: ASSERTION FAILURE: %m", $time);
     
 endmodule
