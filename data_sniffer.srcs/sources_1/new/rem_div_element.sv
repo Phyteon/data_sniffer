@@ -45,21 +45,24 @@ module rem_div_element #(
                         ((('d194 > single_byte) && ('d97 <= single_byte)) ?
                             single_byte - 'd97 : single_byte - 'd194));
     
+    /* Generating hardware so that execution cycles always match */
     generate
         case(MULTIPLY_COEFF)
-            'd35: multiplier mult_by_35(.clk(clk), .num_in(single_byte_remainder), .result(multiplied_by_offset));
-            'd36: multiplier mult_by_36(.clk(clk), .num_in(single_byte_remainder), .result(multiplied_by_offset));
-            'd61: multiplier mult_by_61(.clk(clk), .num_in(single_byte_remainder), .result(multiplied_by_offset));
-            'd62: multiplier mult_by_62(.clk(clk), .num_in(single_byte_remainder), .result(multiplied_by_offset));
-            'd96: multiplier mult_by_96(.clk(clk), .num_in(single_byte_remainder), .result(multiplied_by_offset));
+            'd35: mult_by_35 multiplier(.clk(clk), .num_in(single_byte_remainder), .result(multiplied_by_offset));
+            'd36: mult_by_36 multiplier(.clk(clk), .num_in(single_byte_remainder), .result(multiplied_by_offset));
+            'd61: mult_by_61 multiplier(.clk(clk), .num_in(single_byte_remainder), .result(multiplied_by_offset));
+            'd62: mult_by_62 multiplier(.clk(clk), .num_in(single_byte_remainder), .result(multiplied_by_offset));
+            'd96: mult_by_96 multiplier(.clk(clk), .num_in(single_byte_remainder), .result(multiplied_by_offset));
+            'd1: always @(posedge clk) multiplied_by_offset <= single_byte_remainder;
         endcase
     endgenerate
     
     always @(posedge clk) begin
         if (1'b0 == nreset)
             remainder <= 0;
-        else
+        else begin
             remainder <= multiplied_by_offset;
+        end 
     end
     
     
